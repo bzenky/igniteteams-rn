@@ -10,6 +10,7 @@ import { Button } from '@components/Button'
 
 export function Groups() {
   const [groups, setGroups] = useState<string[]>(['Galera da Rocket', 'Amigos'])
+
   const navigation = useNavigation()
 
   function handleNewGroup() {
