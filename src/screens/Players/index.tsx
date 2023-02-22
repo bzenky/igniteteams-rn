@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 import { Alert, FlatList, TextInput } from "react-native"
-import { useRoute } from "@react-navigation/native"
+import { useNavigation, useRoute } from "@react-navigation/native"
 import { ButtonIcon } from "@components/ButtonIcon"
 import { Filter } from "@components/Filter"
 import { Header } from "@components/Header"
@@ -15,6 +15,7 @@ import { PlayerStorageDTO } from "@storage/player/PlayerStorageDTO"
 import { playersGetByGroupAndTeam } from "@storage/player/playersGetByGroupAndTeam"
 import { playerRemoveByGroup } from "@storage/player/playerRemoveByGroup"
 import { Container, Form, HeaderList, NumbersOfPlayers } from "./styles"
+import { groupRemoveByName } from "@storage/group/groupRemoveByName"
 
 type RouteParams = {
   group: string
@@ -25,6 +26,7 @@ export function Players() {
   const [team, setTeam] = useState('Time A')
   const [players, setPlayers] = useState<PlayerStorageDTO[]>([])
 
+  const navigation = useNavigation()
   const route = useRoute()
   const { group } = route.params as RouteParams
 
@@ -73,6 +75,33 @@ export function Players() {
     } catch (error) {
       console.log(error)
       Alert.alert('Nova Pessoa', 'Não foi possível remover a pessoa')
+    }
+  }
+
+  async function groupRemove() {
+    try {
+      await groupRemoveByName(group)
+      navigation.navigate('groups')
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Turma', 'Não foi possível remover o grupo.')
+    }
+  }
+
+  async function handleGroupRemove() {
+    try {
+      Alert.alert(
+        'Remover',
+        'Deseja remover o grupo',
+        [
+          { text: 'Não', style: 'cancel' },
+          { text: 'Sim', onPress: () => groupRemove() }
+        ]
+      )
+
+    } catch (error) {
+      console.log(error)
+      Alert.alert('Turma', 'Não foi possível remover a turma')
     }
   }
 
@@ -148,6 +177,7 @@ export function Players() {
       <Button
         title="Remover turma"
         type="SECONDARY"
+        onPress={handleGroupRemove}
       />
     </Container>
   )
